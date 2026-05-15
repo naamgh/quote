@@ -1,5 +1,25 @@
 [
   {
+    "name": "Custom Reaction Ring",
+    "price": 1350,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Custom Gumball Machine (Inc 150x capsules)",
+    "price": 1450,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Custom Batak Reaction Wall",
+    "price": 1350,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Custom Claw Machine",
+    "price": 1300,
+    "weeklyExcluded": false
+  },
+  {
     "name": "Delivery (Travel)",
     "price": 0,
     "weeklyExcluded": true
