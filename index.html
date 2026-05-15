@@ -449,6 +449,7 @@ body.dark .quote-settings-card.type-private-venue .card-head{
 <script>
 const STORAGE_KEY = 'email_response_builder_v7_v3_ui';
 const LEGACY_KEYS = ['email_response_builder_v3_quote','email_response_builder_clean_v6','email_response_builder_v1'];
+const QUOTE_ITEMS_JSON_URL = 'quote-items.json';
 const tabCount = 7;
 const quoteTabIndex = 6;
 let activeTab = 0;
@@ -500,6 +501,53 @@ function loadData(){
   }
   return normalizeData({tabs: starterData, drafts: {}, quote: {}});
 }
+
+async function loadQuoteItemsFromJson(){
+  try{
+    const response = await fetch(QUOTE_ITEMS_JSON_URL, {cache: 'no-store'});
+    if(!response.ok) throw new Error('quote-items.json not found');
+
+    const imported = await response.json();
+    if(!Array.isArray(imported)) throw new Error('quote-items.json must be an array');
+
+    const cleanItems = imported
+      .filter(function(item){ return item && String(item.name || '').trim(); })
+      .map(function(item){
+        return {
+          id: item.id || makeId(),
+          name: String(item.name || '').trim(),
+          price: Number(item.price || 0),
+          weeklyExcluded: !!item.weeklyExcluded
+        };
+      });
+
+    if(!cleanItems.length) return;
+
+    data.quote.items = cleanItems;
+
+    // Keep already-selected items in sync with matching inventory names where possible.
+    data.quote.selected = data.quote.selected.map(function(sel){
+      const match = cleanItems.find(function(item){
+        return item.name.trim().toLowerCase() === String(sel.name || '').trim().toLowerCase();
+      });
+      if(match){
+        sel.itemId = match.id;
+        sel.name = match.name;
+        sel.price = match.price;
+        sel.weeklyExcluded = !!match.weeklyExcluded;
+      }
+      return sel;
+    });
+
+    save();
+    renderQuoteItems();
+    renderPackageList();
+    buildQuoteText();
+  }catch(err){
+    console.warn('Using local quote items. Remote JSON could not be loaded:', err.message);
+  }
+}
+
 
 function normalizeData(raw){
   const data = raw || {};
@@ -1129,7 +1177,7 @@ function setBackupStatus(text){
 
 function exportQuoteItems(){
   const items = data.quote.items.map(function(item){
-    return {name: item.name, price: Number(item.price || 0), weeklyExcluded: !!item.weeklyExcluded};
+    return {id: item.id, name: item.name, price: Number(item.price || 0), weeklyExcluded: !!item.weeklyExcluded};
   });
   const payload = JSON.stringify(items, null, 2);
   const blob = new Blob([payload], {type: 'application/json'});
