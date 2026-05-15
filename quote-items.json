@@ -1,0 +1,422 @@
+[
+  {
+    "name": "Delivery (Travel)",
+    "price": 0,
+    "weeklyExcluded": true
+  },
+  {
+    "name": "Delivery Fee (Access - No Dock)",
+    "price": 200,
+    "weeklyExcluded": true
+  },
+  {
+    "name": "Custom Branding",
+    "price": 0,
+    "weeklyExcluded": true
+  },
+  {
+    "name": "Motion Car Simulator (Single Car)",
+    "price": 600,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Motion Car Simulator (Twin Cars)",
+    "price": 1000,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Daytona Championship USA (Twin Cars)",
+    "price": 700,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Mario Kart GP2 (Twin Cars)",
+    "price": 800,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Battle Gear 4 (Twin Cars)",
+    "price": 700,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Sega Daytona USA (Twin Cars)",
+    "price": 700,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Sega Rally (Twin Cars)",
+    "price": 700,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "4 Player Nitro Speed Racer",
+    "price": 700,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Super Bikes",
+    "price": 800,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Final Furlong Horse Racer",
+    "price": 1000,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Super Wings – Sky Rocket",
+    "price": 600,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Dance Dance Revolution",
+    "price": 700,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Guitar Hero",
+    "price": 500,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Atari Pong Table",
+    "price": 550,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Pinball Machine",
+    "price": 400,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Cocktail Table Arcade",
+    "price": 300,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Upright Arcade",
+    "price": 300,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "4 Player Upright Arcade",
+    "price": 400,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Deal or no Deal",
+    "price": 600,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Bug Cruncher",
+    "price": 450,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Speedy Feet",
+    "price": 550,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Fruit Ninja FX",
+    "price": 500,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Whack A Minion",
+    "price": 500,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Little Speedy",
+    "price": 450,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Point Blank",
+    "price": 400,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Ranger Mission",
+    "price": 400,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Ninja Assault",
+    "price": 400,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Big Buck Hunter Pro / World",
+    "price": 450,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Big Buck Hunter Reloaded",
+    "price": 550,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Buck Hunter HD",
+    "price": 650,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Time Crisis 2",
+    "price": 500,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Time Crisis 4",
+    "price": 700,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "T-Rex Fight",
+    "price": 450,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Zombie Land",
+    "price": 450,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Zombie Outbreak (Water Shooter)",
+    "price": 700,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Fire Rescue (Water Shooter)",
+    "price": 700,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Duckling Fight",
+    "price": 500,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Air Hockey Table (7.6ft)",
+    "price": 400,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Air Hockey Table (6ft)",
+    "price": 350,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Pool Table (7ft)",
+    "price": 400,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Table Tennis Table",
+    "price": 300,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Foosball Soccer Table",
+    "price": 250,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Subsoccer Table",
+    "price": 400,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Beer Pong Table",
+    "price": 150,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Darts Beat",
+    "price": 600,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Junior Basketball",
+    "price": 300,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Basketball League (Single)",
+    "price": 600,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Extreme Shot Basketball (Single)",
+    "price": 800,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Dragon Punch",
+    "price": 600,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Boxing Champion",
+    "price": 800,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "MMA Boxer",
+    "price": 800,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Regular King of the Hammer",
+    "price": 800,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Large King of the Hammer",
+    "price": 1200,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Skee Ball",
+    "price": 500,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Bowling Champ (Double Lane)",
+    "price": 1000,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Skill Tester Claw Machine",
+    "price": 700,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Stacker Prize Machine",
+    "price": 700,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Vending Machine",
+    "price": 800,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Cash Grab Machine",
+    "price": 700,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Mini Cash Grab Machine",
+    "price": 450,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Spin N Win",
+    "price": 600,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Batak Reaction Game",
+    "price": 500,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Giant Gumball Machine (Inc 150 Empty Capsules)",
+    "price": 700,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Giant Plinko Game",
+    "price": 450,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Reaction Ring",
+    "price": 450,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Maxi Prize Wheel (120cm)",
+    "price": 450,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Spinning Prize Wheel (80cm)",
+    "price": 200,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Raffle Barrel",
+    "price": 200,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Large Buzz Wire Game",
+    "price": 200,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Slushie Cocktail Drink Machine (Twin Bowl)",
+    "price": 300,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Fairy Floss Machine with Cart",
+    "price": 250,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Popcorn Machine with Cart",
+    "price": 250,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Hole E Moley",
+    "price": 250,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Giant Chess",
+    "price": 250,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Giant Checkers",
+    "price": 250,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Giant Jenga",
+    "price": 110,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Giant Connect 4",
+    "price": 110,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Giant Tic Tac Toe",
+    "price": 80,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Cornhole Bean Bag Toss",
+    "price": 110,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Karaoke Jukebox (8000+ Songs)",
+    "price": 350,
+    "weeklyExcluded": false
+  },
+  {
+    "name": "Photo Booth",
+    "price": 800,
+    "weeklyExcluded": false
+  }
+]

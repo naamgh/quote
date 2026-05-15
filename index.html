@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Email Response Builder</title>
+<style>
+:root{
+  --bg:#f3f4f6; --panel:#ffffff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb;
+  --accent:#2563eb; --accent-soft:#dbeafe; --danger:#dc2626; --good:#059669; --warn:#d97706;
+  --shadow:0 10px 30px rgba(17,24,39,.08); --radius:18px;
+}
+body.dark{
+  --bg:#202124; --panel:#2b2d31; --ink:#f3f4f6; --muted:#c0c4cc; --line:#45474d;
+  --accent:#8ab4f8; --accent-soft:#303f5f; --danger:#ef4444; --good:#22c55e; --warn:#f59e0b;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+body.dark .topbar{background:rgba(32,33,36,.94)}
+body.dark .card,body.dark .tab,body.dark .dark-toggle{background:var(--panel);color:var(--ink);border-color:var(--line)}
+body.dark .tab.active{background:#f3f4f6;color:#202124;border-color:#f3f4f6}
+body.dark input,body.dark select,body.dark textarea{background:#24262b;color:var(--ink);border-color:var(--line)}
+body.dark input::placeholder,body.dark textarea::placeholder{color:#9ca3af}
+body.dark .empty,body.dark .totals,body.dark .quote-line,body.dark .item-card,body.dark .snippet-card{background:#24262b;border-color:var(--line)}
+body.dark .split-actions{background:var(--panel);border-color:var(--line)}
+body.dark button.ghost,body.dark button.secondary{background:#3a3d44;color:var(--ink);border-color:var(--line)}
+body.dark .pill{background:#3a3d44;color:var(--ink)}
+body.dark .hint,body.dark .small,body.dark .label{color:var(--muted)}
+body.dark .quote-item,
+body.dark .selected-item,
+body.dark .snippet{
+  background:#24262b;
+  border-color:#45474d;
+  color:var(--ink);
+}
+body.dark .quote-item:hover,
+body.dark .quote-item.highlighted{
+  background:#303f5f;
+  border-color:var(--accent);
+}
+body.dark .price-pill{
+  background:#143d2a;
+  color:#86efac;
+}
+body.dark .package-pill{
+  background:#303f5f;
+  color:#dbeafe;
+  border-color:#4b5f86;
+}
+body.dark .package-pill:hover{
+  background:#3a4d73;
+}
+body.dark .package-checkboxes{
+  background:#24262b;
+  border-color:#45474d;
+}
+body.dark .package-checkboxes label{
+  color:var(--ink);
+}
+body.dark .quote-item .item-actions button.ghost,
+body.dark .selected-item button.ghost{
+  background:#3a3d44;
+  color:var(--ink);
+  border-color:#45474d;
+}
+body.dark .selected-item input{
+  background:#1f2126;
+  color:var(--ink);
+  border-color:#45474d;
+}
+
+.topbar{position:sticky;top:0;z-index:50;background:rgba(243,244,246,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.wrap{max-width:1500px;margin:0 auto;padding:18px}.top-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.dark-toggle{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:9px 13px;border-radius:999px;font-weight:800;white-space:nowrap}
+h1{font-size:24px;margin:0 0 12px;font-weight:750;letter-spacing:-.03em}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.tab{border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:10px 16px;border-radius:999px;cursor:pointer;font-weight:700;white-space:nowrap}
+.tab.active{background:var(--ink);color:white;border-color:var(--ink)}
+.grid{max-width:1500px;margin:0 auto;padding:18px;display:grid;grid-template-columns:minmax(330px,520px) 1fr;gap:18px;align-items:start}
+.quote-grid{
+  max-width:1700px;
+  margin:0 auto;
+  padding:18px;
+  display:grid;
+  grid-template-columns:minmax(320px,420px) minmax(300px,420px) minmax(260px,330px) minmax(360px,1fr);
+  gap:14px;
+  align-items:stretch;
+}
+.quote-grid > .card{
+  min-height:760px;
+  height:760px;
+  display:flex;
+  flex-direction:column;
+}
+.quote-grid > .card > .section{
+  flex:1;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+.quote-grid .compact-list{
+  flex:1;
+  min-height:0;
+  max-height:none;
+  overflow:auto;
+  align-content:flex-start;
+}
+.quote-grid .selected-compact{
+  flex:1;
+  min-height:0;
+  max-height:none;
+  overflow:auto;
+  align-content:flex-start;
+}
+.quote-grid .quote-text{
+  flex:1;
+  min-height:0;
+  height:100%;
+}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.card-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center}
+.card-head h2{font-size:16px;margin:0}.hint{font-size:12px;color:var(--muted);line-height:1.35}
+.section{padding:16px 18px}.row{display:flex;gap:10px;align-items:center}.stack{display:grid;gap:12px}.tab-rename{display:flex;gap:8px;align-items:center}.tab-rename input{flex:1}.tab-rename button{padding:10px 12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+input,textarea,select{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;font:inherit;background:#fff;color:var(--ink)}
+textarea{min-height:110px;resize:vertical;line-height:1.45}.email-box{min-height:520px;font-size:15px;line-height:1.55;white-space:pre-wrap}
+button{border:0;border-radius:12px;padding:10px 14px;font-weight:750;cursor:pointer;background:var(--ink);color:white;white-space:nowrap}
+button.secondary{background:var(--accent-soft);color:var(--accent)}button.ghost{background:#f9fafb;color:var(--ink);border:1px solid var(--line)}button.danger{background:#fee2e2;color:var(--danger)}button.good{background:#d1fae5;color:var(--good)}
+button.small-btn{padding:7px 10px;border-radius:10px;font-size:12px}
+.snippet,.quote-item,.selected-item{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fafafa;display:grid;gap:10px}
+.quote-item{
+  grid-template-columns:1fr auto;
+  align-items:center;
+  padding:8px 10px;
+  gap:8px;
+  cursor:pointer;
+  flex:0 0 auto;
+  min-height:auto;
+}
+.quote-item:hover,
+.quote-item.highlighted{border-color:var(--accent);background:var(--accent-soft)}
+.quote-item .item-title{min-width:0}
+.quote-item .item-title strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quote-item .price-pill{white-space:nowrap}
+.quote-item .item-actions{display:none;justify-content:flex-end}
+.backup-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.backup-actions input[type=file]{display:none}
+.package-list{display:flex;gap:8px;flex-wrap:wrap}
+.package-pill{background:var(--accent-soft);color:var(--accent);border:1px solid var(--line);padding:8px 10px;border-radius:999px;font-size:12px;font-weight:800;cursor:pointer}
+.package-pill:hover{filter:brightness(.97)}
+.package-manager{border:1px solid var(--line);border-radius:14px;padding:10px;background:#fafafa;display:grid;gap:10px}
+.collapsible-block{
+  border:1px solid var(--line);
+  border-radius:14px;
+  overflow:hidden;
+}
+.collapsible-toggle{
+  width:100%;
+  border:none;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 14px;
+  font-weight:800;
+  cursor:pointer;
+}
+.collapsible-toggle:hover{
+  background:rgba(0,0,0,.03);
+}
+.collapsible-content{
+  padding:0 14px 14px;
+  display:grid;
+  gap:10px;
+}
+.collapsible-block.collapsed .collapsible-content{
+  display:none;
+}
+#addItemPanel{
+  max-height:360px;
+  overflow:auto;
+  padding-right:4px;
+}
+.collapsible-arrow{
+  transition:transform .15s ease;
+}
+.collapsible-block:not(.collapsed) .collapsible-arrow{
+  transform:rotate(90deg);
+}
+body.dark .collapsible-block{
+  border-color:#45474d;
+  background:#24262b;
+}
+body.dark .collapsible-toggle:hover{
+  background:rgba(255,255,255,.04);
+}
+body.dark .package-manager{background:#24262b;border-color:var(--line)}
+.package-checkboxes{display:grid;gap:6px;max-height:170px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:8px}
+.package-checkboxes label{display:flex;gap:8px;align-items:center;font-size:12px}
+.package-checkboxes input{width:auto}
+.manage-mode .quote-item{grid-template-columns:1fr auto auto;cursor:default}
+.manage-mode .quote-item .item-actions{display:flex}
+.add-hint{font-size:11px;color:var(--muted);white-space:nowrap}
+.snippet-title,.item-title{display:flex;justify-content:space-between;gap:10px;align-items:start}.snippet-title strong,.item-title strong{font-size:14px}.snippet-preview{font-size:13px;color:var(--muted);line-height:1.4;max-height:56px;overflow:hidden}
+.snippet-actions,.item-actions{display:flex;gap:8px;flex-wrap:wrap}.pill{font-size:11px;color:var(--muted);background:#f3f4f6;padding:5px 8px;border-radius:999px}.price-pill{font-size:12px;color:#065f46;background:#d1fae5;padding:5px 8px;border-radius:999px;font-weight:800}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}.empty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px;background:#fafafa}
+.split-actions{position:sticky;top:92px;z-index:10;background:var(--panel);border-bottom:1px solid var(--line);padding:12px 18px;display:flex;gap:8px;flex-wrap:wrap}
+.small{font-size:12px;color:var(--muted)}.label{font-size:12px;font-weight:800;color:var(--muted);margin-bottom:6px}.compact-list{display:grid;gap:8px;max-height:560px;overflow:auto;padding-right:4px}.selected-compact{display:flex;flex-direction:column;gap:6px;max-height:610px;overflow:auto;padding-right:4px}.selected-compact .selected-item{flex:0 0 auto;padding:8px;gap:7px}
+.selected-item{position:relative}
+.selected-item.dragging{opacity:.45}
+.selected-item .drag-handle{
+  cursor:grab;
+  user-select:none;
+  font-size:16px;
+  line-height:1;
+  color:var(--muted);
+  padding:2px 4px 2px 0;
+}
+.selected-item .drag-handle:active{cursor:grabbing}
+body.dark .selected-item.dragging{opacity:.5}
+.selected-compact .quote-line{padding:7px 8px;border-radius:10px;font-size:12px;gap:6px}.selected-compact .quote-line strong{font-size:12px}.selected-compact .quote-line input{padding:5px 4px;font-size:12px;border-radius:7px;text-align:center}.selected-compact .quote-line button{padding:5px 7px;font-size:11px}.quote-text{min-height:610px}
+.totals{border:1px solid var(--line);border-radius:14px;background:#f9fafb;padding:12px;display:grid;gap:8px}.total-line{display:flex;justify-content:space-between;gap:10px;font-size:14px}.total-line.grand{font-size:17px;font-weight:900;border-top:1px solid var(--line);padding-top:8px}.note{font-size:12px;color:var(--muted);line-height:1.4}.hidden{display:none!important}
+.status-badges{display:flex;gap:8px;flex-wrap:wrap}
+.status-badge{font-size:12px;font-weight:900;padding:6px 9px;border-radius:999px;border:1px solid var(--line)}
+.status-badge.on{background:#d1fae5;color:#065f46;border-color:#a7f3d0}
+.status-badge.off{background:#f3f4f6;color:var(--muted)}
+body.dark .status-badge.on{background:#143d2a;color:#86efac;border-color:#22543d}
+body.dark .status-badge.off{background:#3a3d44;color:#c0c4cc;border-color:#45474d}
+.copy-icon-btn{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+}
+.copy-icon-btn svg{
+  width:18px;
+  height:18px;
+  stroke:currentColor;
+}
+.quote-head-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.quote-settings-card{
+  border-width:2px;
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.quote-settings-card .card-head{
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.quote-settings-card.type-commercial-ex{
+  border-color:#2563eb;
+  box-shadow:0 10px 30px rgba(37,99,235,.14);
+}
+.quote-settings-card.type-commercial-ex .card-head{
+  background:#dbeafe;
+  color:#1e40af;
+  border-color:#bfdbfe;
+}
+.quote-settings-card.type-commercial-inc{
+  border-color:#16a34a;
+  box-shadow:0 10px 30px rgba(22,163,74,.14);
+}
+.quote-settings-card.type-commercial-inc .card-head{
+  background:#dcfce7;
+  color:#166534;
+  border-color:#bbf7d0;
+}
+.quote-settings-card.type-private-residential{
+  border-color:#ea580c;
+  box-shadow:0 10px 30px rgba(234,88,12,.14);
+}
+.quote-settings-card.type-private-residential .card-head{
+  background:#ffedd5;
+  color:#9a3412;
+  border-color:#fed7aa;
+}
+.quote-settings-card.type-private-venue{
+  border-color:#9333ea;
+  box-shadow:0 10px 30px rgba(147,51,234,.14);
+}
+.quote-settings-card.type-private-venue .card-head{
+  background:#f3e8ff;
+  color:#6b21a8;
+  border-color:#e9d5ff;
+}
+body.dark .quote-settings-card.type-commercial-ex .card-head{
+  background:#1e3a5f;
+  color:#dbeafe;
+  border-color:#60a5fa;
+}
+body.dark .quote-settings-card.type-commercial-inc .card-head{
+  background:#163824;
+  color:#dcfce7;
+  border-color:#4ade80;
+}
+body.dark .quote-settings-card.type-private-residential .card-head{
+  background:#4a2b14;
+  color:#ffedd5;
+  border-color:#fb923c;
+}
+body.dark .quote-settings-card.type-private-venue .card-head{
+  background:#3b1f52;
+  color:#f3e8ff;
+  border-color:#c084fc;
+}
+@media(max-width:1150px){
+  .quote-grid{grid-template-columns:1fr}
+  .quote-grid > .card{height:auto;min-height:auto}
+  .compact-list{max-height:none}
+  .quote-text{min-height:380px}
+}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.split-actions{top:112px}.email-box{min-height:360px}.two,.three{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap"><div class="top-row"><h1>Email Response Builder</h1><button class="dark-toggle" id="darkToggle">Dark mode</button></div><div class="tabs" id="tabs"></div></div></div>
+
+<main class="grid" id="emailMode">
+  <section class="card">
+    <div class="card-head"><div><h2>Editable email elements</h2><div class="hint">Create reusable chunks for the active tab. Click “Add to email” to build your response.</div></div><span class="pill" id="activeTabLabel">Tab 1</span></div>
+    <div class="section stack">
+      <div class="tab-rename" id="tabRenameBox">
+        <input id="tabNameInput" placeholder="Rename this tab" />
+        <button class="ghost" id="renameTab">Rename tab</button>
+      </div>
+      <input id="snippetTitle" placeholder="Element title, e.g. Opening greeting" />
+      <textarea id="snippetBody" placeholder="Paste or write the reusable email text here..."></textarea>
+      <div class="row"><button id="saveSnippet">Add element</button><button class="ghost" id="clearForm">Clear</button></div>
+      <input id="search" placeholder="Search elements in this tab..." />
+      <div class="stack" id="snippetList"></div>
+    </div>
+  </section>
+  <section class="card">
+    <div class="card-head"><div><h2>Built email response</h2><div class="hint">Edit directly here, then copy when ready.</div></div></div>
+    <div class="split-actions"><button id="copyEmail">Copy email</button><button class="ghost" id="newLine">Add line break</button><button class="danger" id="clearEmail">Clear email</button><span class="small" id="copyStatus"></span></div>
+    <div class="section"><textarea id="emailOutput" class="email-box" placeholder="Your selected email elements will appear here. You can also type and edit directly."></textarea></div>
+  </section>
+</main>
+
+<main class="quote-grid hidden" id="quoteMode">
+  <section class="card quote-settings-card type-commercial-ex" id="quoteSettingsCard">
+    <div class="card-head"><div><h2>Quote settings</h2><div class="hint">Choose client type, delivery fee, afterhours and the matching default intro.</div></div><span class="pill">Tab 7</span></div>
+    <div class="section stack">
+      <div class="two">
+        <div><div class="label">Client type</div><select id="clientType"><option value="commercial_ex">Commercial (ex-gst)</option><option value="commercial_inc">Commercial (inc-gst)</option><option value="private_residential">Private - Residential</option><option value="private_hired_venue">Private - Hired Venue</option></select></div>
+        <div><div class="label">Delivery fee</div><select id="deliveryFee"><option value="0">No delivery fee</option><option value="200">$200</option><option value="250">$250</option><option value="300">$300</option><option value="350">$350</option><option value="400">$400</option><option value="450">$450</option><option value="500">$500</option><option value="550">$550</option></select></div>
+      </div>
+      <div class="row" style="justify-content:flex-start;flex-wrap:wrap">
+        <label class="row" style="justify-content:flex-start">
+          <input id="afterhours" type="checkbox" style="width:auto" />
+          <span><strong>Afterhours</strong> <span class="small">adds $250 to the quote</span></span>
+        </label>
+        <label class="row" style="justify-content:flex-start">
+          <input id="weeklyHire" type="checkbox" style="width:auto" />
+          <span><strong>Weekly Hire</strong> <span class="small">multiplies quoted items ×1.5</span></span>
+        </label>
+      </div>
+      <div><div class="label">Client name</div><input id="quoteClient" placeholder="e.g. John" /></div>
+      <div><div class="label">Quotation intro for selected client type</div><textarea id="quoteIntro"></textarea></div>
+      <div class="totals" id="totalsBox"></div>
+      
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><div><h2>Select quote items</h2><div class="hint">Type to search, click a row to add, or press Enter to add the top match.</div></div><button class="secondary small-btn" id="toggleManageItems">Manage list</button></div>
+    <div class="section stack" id="quoteItemsSection">
+      <div>
+        <div class="label">Popular packages</div>
+        <div class="package-list" id="packageList"></div>
+      </div>
+      <div class="stack hidden" id="addItemPanel">
+        <div class="backup-actions">
+          <button class="ghost small-btn" id="exportItems">Export price list</button>
+          <button class="ghost small-btn" id="importMergeItems">Import & merge</button>
+          <button class="danger small-btn" id="importReplaceItems">Import & replace</button>
+          <input id="importItemsFile" type="file" accept=".json,application/json" />
+          <span class="small" id="backupStatus"></span>
+        </div>
+        <div class="collapsible-block collapsed" id="packageManagerBlock">
+          <button class="collapsible-toggle" type="button" data-collapse="packageManagerBlock">
+            <span>Create / edit package</span>
+            <span class="collapsible-arrow">›</span>
+          </button>
+          <div class="collapsible-content">
+            <div class="package-manager">
+              <input id="packageName" placeholder="Package name, e.g. Arcade Party Package" />
+              <div class="package-checkboxes" id="packageItemChecks"></div>
+              <div class="row"><button id="savePackage" class="small-btn">Save package</button><button id="clearPackage" class="ghost small-btn">Clear</button><button id="deletePackage" class="danger small-btn">Delete package</button></div>
+              <div class="small">Tick the inventory items that should be added when this package is clicked.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="collapsible-block collapsed" id="itemManagerBlock">
+          <button class="collapsible-toggle" type="button" data-collapse="itemManagerBlock">
+            <span>Create / edit inventory item</span>
+            <span class="collapsible-arrow">›</span>
+          </button>
+          <div class="collapsible-content">
+            <div class="two"><input id="itemName" placeholder="Item name" /><input id="itemPrice" type="number" min="0" step="10" placeholder="Price" /></div>
+            <label class="row" style="justify-content:flex-start">
+              <input id="itemWeeklyExcluded" type="checkbox" style="width:auto" />
+              <span><strong>Exclude from Weekly Hire multiplier</strong> <span class="small">keeps this item at normal price when Weekly Hire is on</span></span>
+            </label>
+            <div class="row"><button id="saveItem">Save item</button><button class="ghost" id="clearItem">Clear</button></div>
+          </div>
+        </div>
+      </div>
+      <input id="itemSearch" placeholder="Search price list..." />
+      <div class="small" id="itemSearchHint">Click any item to add it to the quote.</div>
+      <div class="compact-list" id="quoteItemList"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <div><h2>Selected items</h2><div class="hint">Compact quote selection.</div></div>
+      <button class="danger small-btn" id="clearSelectedItems">Clear All</button>
+    </div>
+    <div class="section"><div id="selectedItems" class="selected-compact"></div></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <div>
+        <h2>Plain text quotation</h2>
+        <div class="hint">Returns normal text, not a table. You can edit before copying.</div>
+      </div>
+      <div class="quote-head-actions">
+        <span class="small" id="quoteCopyStatus"></span>
+        <button class="ghost copy-icon-btn" id="copyQuote" title="Copy quotation">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="section stack"><textarea id="quoteOutput" class="email-box quote-text"></textarea></div>
+  </section>
+</main>
+
+<script>
+const STORAGE_KEY = 'email_response_builder_v7_v3_ui';
+const LEGACY_KEYS = ['email_response_builder_v3_quote','email_response_builder_clean_v6','email_response_builder_v1'];
+const tabCount = 7;
+const quoteTabIndex = 6;
+let activeTab = 0;
+let editingId = null;
+let editingItemId = null;
+let manageItems = false;
+let pendingImportMode = 'merge';
+let editingPackageId = null;
+let draggedSelectedId = null;
+let highlightedQuoteItemIndex = 0;
+
+const defaultIntroMap = {
+  commercial_ex: 'Hi [Client Name],\n\nThank you for your enquiry.\n\nThe cost of hire is as follows (these prices are EX-gst) -',
+  commercial_inc: 'Hi [Client Name],\n\nThank you for your enquiry.\n\nThe cost of hire is as follows -',
+  private_residential: 'Hi [Client Name],\n\nThank you for your enquiry.\n\nThe cost of hire is as follows -',
+  private_hired_venue: 'Hi [Client Name],\n\nThank you for your enquiry.\n\nThe cost of hire is as follows -'
+};
+
+const defaultItems = [
+  ['Example Item 1', 120], ['Example Item 2', 180], ['Example Item 3', 250], ['Example Item 4', 320], ['Example Item 5', 400]
+].map(function(pair){ return {id: makeId(), name: pair[0], price: pair[1]}; });
+
+const starterData = Array.from({length: tabCount}, function(_, i){
+  return {
+    name: i === 6 ? 'Quote Builder' : 'Tab ' + (i + 1),
+    snippets: i === 0 ? [
+      {id: makeId(), title: 'Greeting', body: 'Hi [Client Name],\n\nThanks for getting in touch.'},
+      {id: makeId(), title: 'Request more information', body: 'Could you please send through a few more details so I can look into this properly?'},
+      {id: makeId(), title: 'Closing', body: 'Kind regards,\n[Your Name]'}
+    ] : []
+  };
+});
+
+function makeId(){
+  if(window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+}
+
+function loadData(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if(saved) return normalizeData(saved);
+  }catch(e){}
+  for(const key of LEGACY_KEYS){
+    try{
+      const saved = JSON.parse(localStorage.getItem(key));
+      if(saved) return normalizeData(saved);
+    }catch(e){}
+  }
+  return normalizeData({tabs: starterData, drafts: {}, quote: {}});
+}
+
+function normalizeData(raw){
+  const data = raw || {};
+  if(!data.tabs || !Array.isArray(data.tabs) || data.tabs.length !== tabCount) data.tabs = starterData;
+  data.tabs[6].name = 'Quote Builder';
+  if(!data.drafts) data.drafts = {};
+  if(!data.quote) data.quote = {};
+  if(!Array.isArray(data.quote.items)) data.quote.items = defaultItems;
+  data.quote.items = data.quote.items.map(function(item){
+    return {id: item.id || makeId(), name: item.name || 'Untitled item', price: Number(item.price || 0), weeklyExcluded: !!item.weeklyExcluded};
+  });
+  if(!Array.isArray(data.quote.selected)) data.quote.selected = [];
+  data.quote.selected = data.quote.selected.map(function(item){
+    return {id: item.id || makeId(), itemId: item.itemId || item.id || makeId(), name: item.name || 'Untitled item', price: Number(item.price || 0), qty: Math.max(1, Number(item.qty || 1)), weeklyExcluded: !!item.weeklyExcluded};
+  });
+  if(data.quote.clientType === 'commercial') data.quote.clientType = 'commercial_ex';
+  if(data.quote.clientType === 'private') data.quote.clientType = 'private_residential';
+  if(data.quote.clientType === 'private_venue') data.quote.clientType = 'private_hired_venue';
+  if(!data.quote.clientType) data.quote.clientType = 'commercial_ex';
+  if(!data.quote.intros) data.quote.intros = {};
+  Object.keys(defaultIntroMap).forEach(function(key){
+    if(!data.quote.intros[key]) data.quote.intros[key] = defaultIntroMap[key];
+  });
+  if(data.quote.intro && data.quote.intro.indexOf('Thanks for your enquiry. Please see pricing below') === -1){
+    data.quote.intros[data.quote.clientType] = data.quote.intro;
+  }
+  if(typeof data.quote.afterhours === 'undefined') data.quote.afterhours = false;
+  if(typeof data.quote.weeklyHire === 'undefined') data.quote.weeklyHire = false;
+  if(typeof data.quote.deliveryFee === 'undefined' || data.quote.deliveryFee === null) data.quote.deliveryFee = defaultDeliveryFor(data.quote.clientType);
+  if(typeof data.quote.client === 'undefined') data.quote.client = '';
+  if(typeof data.quote.output === 'undefined') data.quote.output = '';
+  if(!Array.isArray(data.quote.packages)) data.quote.packages = [];
+  data.quote.packages = data.quote.packages.map(function(pkg){
+    return {
+      id: pkg.id || makeId(),
+      name: pkg.name || 'Untitled package',
+      itemIds: Array.isArray(pkg.itemIds) ? pkg.itemIds : []
+    };
+  });
+  delete data.quote.closing;
+  return data;
+}
+
+let data = loadData();
+if(typeof data.darkMode === 'undefined') data.darkMode = false;
+
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function $(id){ return document.getElementById(id); }
+
+function applyTheme(){
+  document.body.classList.toggle('dark', data.darkMode === true);
+  const btn = $('darkToggle');
+  if(btn) btn.textContent = data.darkMode ? 'Light mode' : 'Dark mode';
+}
+
+function money(n){ return '$' + Number(n || 0).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:2}); }
+function defaultDeliveryFor(type){
+  if(type === 'private_residential') return 0;
+  if(type === 'private_hired_venue') return 200;
+  return 350;
+}
+function escapeText(str){
+  return String(str).replace(/[&<>"']/g, function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m];});
+}
+
+const tabsEl = $('tabs');
+const listEl = $('snippetList');
+const outEl = $('emailOutput');
+
+function renderTabs(){
+  tabsEl.innerHTML = '';
+  data.tabs.forEach(function(tab, idx){
+    const b = document.createElement('button');
+    b.className = 'tab' + (idx === activeTab ? ' active' : '');
+    b.textContent = tab.name || ('Tab ' + (idx + 1));
+    b.onclick = function(){ switchTab(idx); };
+    tabsEl.appendChild(b);
+  });
+  $('activeTabLabel').textContent = data.tabs[activeTab] ? data.tabs[activeTab].name : ('Tab ' + (activeTab + 1));
+  $('emailMode').classList.toggle('hidden', activeTab === quoteTabIndex);
+  $('quoteMode').classList.toggle('hidden', activeTab !== quoteTabIndex);
+}
+
+function loadTabNameField(){
+  const box = $('tabRenameBox');
+  const input = $('tabNameInput');
+  const button = $('renameTab');
+  if(!box || !input || !button) return;
+
+  input.value = data.tabs[activeTab].name || ('Tab ' + (activeTab + 1));
+
+  const locked = activeTab === quoteTabIndex;
+  input.disabled = locked;
+  button.disabled = locked;
+  box.classList.toggle('hidden', locked);
+}
+
+function renderSnippets(){
+  const q = $('search').value.trim().toLowerCase();
+  const snippets = (data.tabs[activeTab].snippets || []).filter(function(s){ return !q || (s.title + s.body).toLowerCase().includes(q); });
+  listEl.innerHTML = '';
+  if(!snippets.length){ listEl.innerHTML = '<div class="empty">No elements yet for this tab.</div>'; return; }
+  snippets.forEach(function(s){
+    const div = document.createElement('div');
+    div.className = 'snippet';
+    div.innerHTML = '<div class="snippet-title"><strong></strong><span class="pill">Saved</span></div><div class="snippet-preview"></div><div class="snippet-actions"><button class="secondary add">Add to email</button><button class="ghost edit">Edit</button><button class="danger del">Delete</button></div>';
+    div.querySelector('strong').textContent = s.title;
+    div.querySelector('.snippet-preview').textContent = s.body;
+    div.querySelector('.add').onclick = function(){ addToEmail(s.body); };
+    div.querySelector('.edit').onclick = function(){ editSnippet(s.id); };
+    div.querySelector('.del').onclick = function(){ deleteSnippet(s.id); };
+    listEl.appendChild(div);
+  });
+}
+
+function switchTab(idx){
+  data.drafts[activeTab] = outEl.value;
+  activeTab = idx;
+  outEl.value = data.drafts[activeTab] || '';
+  editingId = null;
+  $('snippetTitle').value = '';
+  $('snippetBody').value = '';
+  $('saveSnippet').textContent = 'Add element';
+  $('search').value = '';
+  save();
+  $('darkToggle').onclick = function(){ data.darkMode = !data.darkMode; save(); applyTheme(); };
+applyTheme();
+renderTabs();
+  loadTabNameField();
+  if(activeTab === quoteTabIndex){ loadQuoteFields(); renderQuoteItems(); buildQuoteText(); setTimeout(function(){ if($('itemSearch')) $('itemSearch').focus(); }, 0); }
+  else renderSnippets();
+}
+
+function addToEmail(text){
+  const current = outEl.value.trimEnd();
+  outEl.value = current ? current + '\n\n' + text : text;
+  data.drafts[activeTab] = outEl.value;
+  save();
+  outEl.focus();
+}
+function editSnippet(id){
+  const s = data.tabs[activeTab].snippets.find(function(x){ return x.id === id; });
+  if(!s) return;
+  editingId = id;
+  $('snippetTitle').value = s.title;
+  $('snippetBody').value = s.body;
+  $('saveSnippet').textContent = 'Save changes';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function deleteSnippet(id){
+  data.tabs[activeTab].snippets = data.tabs[activeTab].snippets.filter(function(s){ return s.id !== id; });
+  save(); renderSnippets();
+}
+
+$('saveSnippet').onclick = function(){
+  const title = $('snippetTitle').value.trim() || 'Untitled element';
+  const body = $('snippetBody').value.trim();
+  if(!body) return;
+  if(editingId){
+    const s = data.tabs[activeTab].snippets.find(function(x){ return x.id === editingId; });
+    if(s){ s.title = title; s.body = body; }
+  } else {
+    data.tabs[activeTab].snippets.unshift({id: makeId(), title: title, body: body});
+  }
+  editingId = null;
+  $('snippetTitle').value = '';
+  $('snippetBody').value = '';
+  $('saveSnippet').textContent = 'Add element';
+  save(); renderSnippets();
+};
+$('clearForm').onclick = function(){ editingId = null; $('snippetTitle').value = ''; $('snippetBody').value = ''; $('saveSnippet').textContent = 'Add element'; };
+$('search').oninput = renderSnippets;
+outEl.oninput = function(){ data.drafts[activeTab] = outEl.value; save(); };
+$('newLine').onclick = function(){ outEl.value = outEl.value.trimEnd() + '\n\n'; outEl.focus(); data.drafts[activeTab] = outEl.value; save(); };
+$('clearEmail').onclick = function(){ outEl.value = ''; data.drafts[activeTab] = ''; save(); };
+$('copyEmail').onclick = function(){ copyText(outEl.value, 'copyStatus'); };
+
+$('renameTab').onclick = function(){
+  if(activeTab === quoteTabIndex) return;
+  const newName = $('tabNameInput').value.trim();
+  if(!newName) return;
+  data.tabs[activeTab].name = newName;
+  save();
+  renderTabs();
+  loadTabNameField();
+};
+
+$('tabNameInput').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') $('renameTab').click();
+});
+
+function updateQuoteSettingsColour(){
+  const type = $('clientType').value;
+  const card = $('quoteSettingsCard');
+  if(!card) return;
+
+  card.className = 'card quote-settings-card';
+
+  if(type === 'commercial_ex'){
+    card.classList.add('type-commercial-ex');
+  } else if(type === 'commercial_inc'){
+    card.classList.add('type-commercial-inc');
+  } else if(type === 'private_residential'){
+    card.classList.add('type-private-residential');
+  } else {
+    card.classList.add('type-private-venue');
+  }
+}
+
+function loadQuoteFields(){
+  const q = data.quote;
+  $('clientType').value = q.clientType || 'commercial_ex';
+  $('deliveryFee').value = String(q.deliveryFee ?? defaultDeliveryFor(q.clientType));
+  $('afterhours').checked = !!q.afterhours;
+  $('weeklyHire').checked = !!q.weeklyHire;
+  $('quoteClient').value = q.client || '';
+  $('quoteIntro').value = q.intros[$('clientType').value] || defaultIntroMap[$('clientType').value];
+  $('quoteOutput').value = q.output || '';
+  updateQuoteSettingsColour();
+}
+function persistQuoteFields(){
+  const type = $('clientType').value;
+  data.quote.clientType = type;
+  data.quote.deliveryFee = Number($('deliveryFee').value);
+  data.quote.afterhours = $('afterhours').checked;
+  data.quote.weeklyHire = $('weeklyHire').checked;
+  data.quote.client = $('quoteClient').value;
+  data.quote.intros[type] = $('quoteIntro').value;
+  data.quote.output = $('quoteOutput').value;
+  save();
+}
+function clearPackageForm(){
+  editingPackageId = null;
+  $('packageName').value = '';
+  renderPackageItemChecks([]);
+}
+
+function renderPackageList(){
+  const box = $('packageList');
+  if(!box) return;
+  box.innerHTML = '';
+  const packages = data.quote.packages || [];
+  if(!packages.length){
+    box.innerHTML = '<span class="small">No packages yet. Open Manage list to create one.</span>';
+    return;
+  }
+  packages.forEach(function(pkg){
+    const btn = document.createElement('button');
+    btn.className = 'package-pill';
+    btn.textContent = pkg.name;
+    btn.onclick = function(){
+      if(manageItems){
+        editPackage(pkg.id);
+      } else {
+        addPackageToQuote(pkg.id);
+      }
+    };
+    box.appendChild(btn);
+  });
+}
+
+function renderPackageItemChecks(selectedIds){
+  const box = $('packageItemChecks');
+  if(!box) return;
+  box.innerHTML = '';
+  if(!data.quote.items.length){
+    box.innerHTML = '<div class="small">No inventory items yet.</div>';
+    return;
+  }
+  data.quote.items.forEach(function(item){
+    const label = document.createElement('label');
+    label.innerHTML = '<input type="checkbox" value=""><span></span>';
+    const input = label.querySelector('input');
+    input.value = item.id;
+    input.checked = selectedIds.includes(item.id);
+    label.querySelector('span').textContent = item.name + ' - ' + money(item.price);
+    box.appendChild(label);
+  });
+}
+
+function editPackage(id){
+  const pkg = data.quote.packages.find(function(p){ return p.id === id; });
+  if(!pkg) return;
+  editingPackageId = id;
+  $('packageName').value = pkg.name;
+  renderPackageItemChecks(pkg.itemIds || []);
+  $('packageManagerBlock').classList.remove('collapsed');
+  if(!manageItems) $('toggleManageItems').click();
+}
+
+function addPackageToQuote(id){
+  const pkg = data.quote.packages.find(function(p){ return p.id === id; });
+  if(!pkg) return;
+  (pkg.itemIds || []).forEach(function(itemId){
+    const item = data.quote.items.find(function(i){ return i.id === itemId; });
+    if(item) addQuoteItem(item, true);
+  });
+  buildQuoteText();
+}
+
+function getFilteredQuoteItems(){
+  const q = $('itemSearch').value.trim().toLowerCase();
+  return data.quote.items.filter(function(i){ return !q || i.name.toLowerCase().includes(q); });
+}
+
+function addQuoteItem(item, skipBuild){
+  data.quote.selected.push({id: makeId(), itemId: item.id, name: item.name, price: Number(item.price), qty: 1, weeklyExcluded: !!item.weeklyExcluded});
+  if(!skipBuild) buildQuoteText();
+}
+
+function renderQuoteItems(){
+  const items = getFilteredQuoteItems();
+  if(highlightedQuoteItemIndex >= items.length) highlightedQuoteItemIndex = Math.max(0, items.length - 1);
+  const section = $('quoteItemsSection');
+  if(section) section.classList.toggle('manage-mode', manageItems);
+  renderPackageList();
+  renderPackageItemChecks(editingPackageId ? ((data.quote.packages.find(function(p){ return p.id === editingPackageId; }) || {}).itemIds || []) : []);
+  $('quoteItemList').innerHTML = '';
+  if(!items.length){ $('quoteItemList').innerHTML = '<div class="empty">No matching items.</div>'; return; }
+  items.forEach(function(item, index){
+    const div = document.createElement('div');
+    div.className = 'quote-item' + (index === highlightedQuoteItemIndex ? ' highlighted' : '');
+    div.innerHTML = '<div class="item-title"><strong></strong></div><div class="item-actions"><button class="ghost edit small-btn">Edit</button><button class="danger del small-btn">Delete</button></div>';
+    div.querySelector('strong').textContent = item.name;
+    div.title = 'Click to add ' + item.name;
+    div.onmouseenter = function(){
+      if(manageItems) return;
+      highlightedQuoteItemIndex = index;
+      renderQuoteItems();
+    };
+
+    div.onclick = function(e){
+      if(e.target.closest('button')) return;
+      if(manageItems) return;
+      addQuoteItem(item);
+    };
+
+    div.querySelector('.edit').onclick = function(e){ e.stopPropagation(); editItem(item.id); };
+    div.querySelector('.del').onclick = function(e){
+      e.stopPropagation();
+      data.quote.items = data.quote.items.filter(function(i){ return i.id !== item.id; });
+      data.quote.selected = data.quote.selected.filter(function(s){ return s.itemId !== item.id; });
+      data.quote.packages.forEach(function(pkg){ pkg.itemIds = (pkg.itemIds || []).filter(function(id){ return id !== item.id; }); });
+      save(); renderQuoteItems(); buildQuoteText();
+    };
+    $('quoteItemList').appendChild(div);
+  });
+}
+function renderSelected(){
+  const box = $('selectedItems');
+  box.innerHTML = '';
+  if(!data.quote.selected.length){ box.innerHTML = '<div class="empty">No quote items selected yet.</div>'; return; }
+
+  function getDragAfterElement(container, y){
+    const draggableElements = Array.from(container.querySelectorAll('.selected-item:not(.dragging)'));
+    return draggableElements.reduce(function(closest, child){
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if(offset < 0 && offset > closest.offset){
+        return {offset: offset, element: child};
+      } else {
+        return closest;
+      }
+    }, {offset: Number.NEGATIVE_INFINITY}).element;
+  }
+
+  box.ondragover = function(e){
+    e.preventDefault();
+    const afterElement = getDragAfterElement(box, e.clientY);
+    const dragging = document.querySelector('.selected-item.dragging');
+    if(!dragging) return;
+    if(afterElement == null){
+      box.appendChild(dragging);
+    } else {
+      box.insertBefore(dragging, afterElement);
+    }
+  };
+
+  box.ondrop = function(e){
+    e.preventDefault();
+    const orderedIds = Array.from(box.querySelectorAll('.selected-item')).map(function(el){ return el.dataset.selectedId; });
+    data.quote.selected.sort(function(a, b){
+      return orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id);
+    });
+    draggedSelectedId = null;
+    buildQuoteText();
+  };
+
+  data.quote.selected.forEach(function(sel){
+    const div = document.createElement('div');
+    div.className = 'selected-item';
+    div.draggable = true;
+    div.dataset.selectedId = sel.id;
+    div.innerHTML = '<div class="item-title"><div class="row" style="gap:6px;min-width:0"><span class="drag-handle" title="Drag to reorder">☰</span><strong></strong></div><span class="price-pill"></span></div><div class="three"><input class="qty" type="number" min="1" step="1" /><input class="price" type="number" min="0" step="10" /><button class="danger remove">Remove</button></div>';
+    div.querySelector('strong').textContent = sel.name;
+    div.querySelector('.price-pill').textContent = money(sel.qty * sel.price);
+    const qty = div.querySelector('.qty');
+    const price = div.querySelector('.price');
+    qty.value = sel.qty;
+    price.value = sel.price;
+
+    div.addEventListener('dragstart', function(){
+      draggedSelectedId = sel.id;
+      div.classList.add('dragging');
+    });
+    div.addEventListener('dragend', function(){
+      div.classList.remove('dragging');
+      draggedSelectedId = null;
+    });
+
+    function commitSelectedInputs(){
+      sel.qty = Math.max(1, Number(qty.value) || 1);
+      sel.price = Number(price.value) || 0;
+      buildQuoteText();
+    }
+
+    qty.addEventListener('change', commitSelectedInputs);
+    qty.addEventListener('blur', commitSelectedInputs);
+    price.addEventListener('change', commitSelectedInputs);
+    price.addEventListener('blur', commitSelectedInputs);
+
+    qty.addEventListener('keydown', function(e){ if(e.key === 'Enter') qty.blur(); });
+    price.addEventListener('keydown', function(e){ if(e.key === 'Enter') price.blur(); });
+    div.querySelector('.remove').onclick = function(){ data.quote.selected = data.quote.selected.filter(function(x){ return x.id !== sel.id; }); buildQuoteText(); };
+    box.appendChild(div);
+  });
+}
+function buildQuoteText(){
+  persistQuoteFields();
+  const q = data.quote;
+  const type = q.clientType || 'commercial_ex';
+  const weeklyMultiplier = q.weeklyHire ? 1.5 : 1;
+  function effectiveItemPrice(i){
+    const itemMultiplier = (q.weeklyHire && !i.weeklyExcluded) ? weeklyMultiplier : 1;
+    return (Number(i.price) || 0) * itemMultiplier;
+  }
+  const subtotal = q.selected.reduce(function(sum, i){
+    return sum + ((Number(i.qty) || 1) * effectiveItemPrice(i));
+  }, 0);
+  const selectedItemCount = q.selected.reduce(function(sum, i){ return sum + (Number(i.qty) || 1); }, 0);
+  const eligibleDiscountSubtotal = q.selected.reduce(function(sum, i){
+    const basePrice = Number(i.price) || 0;
+    if(basePrice <= 250) return sum;
+    return sum + ((Number(i.qty) || 1) * effectiveItemPrice(i));
+  }, 0);
+  const hasDiscountExcludedItems = q.selected.some(function(i){ return (Number(i.price) || 0) <= 250; });
+  const packageDiscount = (type === 'private_residential' && selectedItemCount >= 3) ? eligibleDiscountSubtotal * 0.20 : 0;
+  const delivery = Number(q.deliveryFee) || 0;
+  const afterhours = q.afterhours ? 250 : 0;
+  const total = subtotal + delivery + afterhours;
+  const gstOnEx = total * 0.10;
+  const gstIncluded = total / 11;
+  const lines = [];
+  const intro = (q.intros[type] || defaultIntroMap[type] || '').replaceAll('[Client Name]', q.client || '[Client Name]').trim();
+  if(intro) lines.push(intro);
+  q.selected.forEach(function(i){
+    const displayPrice = effectiveItemPrice(i);
+    lines.push((i.qty > 1 ? i.qty + ' x ' : '') + i.name + ' - ' + money(displayPrice) + (i.qty > 1 ? ' each' : ''));
+  });
+
+
+  if(delivery > 0) lines.push('Delivery & Pick Up - ' + money(delivery));
+  if(afterhours > 0) lines.push('Afterhours - ' + money(afterhours));
+  lines.push('');
+  if(type === 'commercial_ex'){
+    lines.push('Total: ' + money(total) + ' + GST');
+    lines.push('');
+    lines.push('This includes delivery, setup and pack down as required.');
+    if(afterhours > 0) lines.push('An afterhours fee applies as your delivery/pick-up falls outside our regular trading hours (weekdays, 9am–5pm).');
+    lines.push('');
+  } else if(type === 'commercial_inc'){
+    lines.push('Total: ' + money(total) + ' inc. GST');
+    lines.push('');
+    lines.push('This includes delivery, setup and pack down as required.');
+    if(afterhours > 0) lines.push('An afterhours fee applies as your delivery/pick-up falls outside our regular trading hours (weekdays, 9am–5pm).');
+    lines.push('');
+  } else {
+    lines.push('Total: ' + money(total));
+    if(type === 'private_residential' && selectedItemCount >= 3) lines.push('Total after Package Discount: ' + money(total - packageDiscount));
+    lines.push('');
+    if(type === 'private_residential' && selectedItemCount >= 3) lines.push('Hiring packages of 3 items or more items automatically applies a 20% package discount');
+    if(type === 'private_residential' && selectedItemCount >= 3 && hasDiscountExcludedItems) lines.push('Please note: items priced at $250 or less do not qualify for the 20% package discount.');
+    if(type === 'private_residential' && selectedItemCount === 2) lines.push('Just note if you hire another item, you receive a 20% package discount.')
+    if(type === 'private_residential' && selectedItemCount === 2) lines.push('For example, an Upright Arcade is normally $300.')
+    if(type === 'private_residential' && selectedItemCount === 2) lines.push('If you hire all 3 items your total price will be '  + money((subtotal + 300) * 0.80));
+    if(type === 'private_hired_venue') lines.push('This includes delivery and pick up as required for your event.');
+    if(type === 'private_hired_venue') lines.push('We can remove the afterhours if we are able to deliver on Friday and pick up Monday');
+    lines.push('');
+    if(type === 'private_residential') lines.push('These prices includes delivery on Friday with collection on Monday during regular business hours (residential addresses only)');
+    lines.push('');
+  }
+  lines.push('Please let me know if you require further information.');
+
+  $('quoteOutput').value = lines.join('\n');
+  q.output = $('quoteOutput').value;
+  renderSelected();
+  renderTotals(subtotal, delivery, afterhours, total, gstOnEx, gstIncluded, type, packageDiscount);
+  save();
+}
+function renderTotals(subtotal, delivery, afterhours, total, gstOnEx, gstIncluded, type, packageDiscount){
+  const isEx = type === 'commercial_ex';
+  const isInc = type === 'commercial_inc';
+  const discount = Number(packageDiscount || 0);
+  $('totalsBox').innerHTML =
+    '<div class="total-line"><span>Selected items</span><strong>' + money(subtotal) + '</strong></div>' +
+    '<div class="total-line"><span>Delivery</span><strong>' + money(delivery) + '</strong></div>' +
+    (afterhours ? '<div class="total-line"><span>Afterhours</span><strong>' + money(afterhours) + '</strong></div>' : '') +
+    (discount ? '<div class="total-line"><span>Private package discount note</span><strong>-' + money(discount) + '</strong></div>' : '') +
+    '<div class="total-line grand"><span>' + (isEx ? 'Total' : isInc ? 'Total inc GST' : 'Total') + '</span><span>' + money(total) + (isEx ? ' + gst' : '') + '</span></div>' +
+    (isInc ? '<div class="total-line"><span>GST included</span><strong>' + money(gstIncluded) + '</strong></div>' : '') +
+    '<div class="status-badges">' +
+      '<span class="status-badge ' + (data.quote.weeklyHire ? 'on' : 'off') + '">Weekly Hire: ' + (data.quote.weeklyHire ? 'ON' : 'OFF') + '</span>' +
+      '<span class="status-badge ' + (data.quote.afterhours ? 'on' : 'off') + '">Afterhours: ' + (data.quote.afterhours ? 'ON' : 'OFF') + '</span>' +
+    '</div>';
+}
+function editItem(id){
+  const item = data.quote.items.find(function(i){ return i.id === id; });
+  if(!item) return;
+  editingItemId = id;
+  $('itemName').value = item.name;
+  $('itemPrice').value = item.price;
+  $('itemWeeklyExcluded').checked = !!item.weeklyExcluded;
+  $('saveItem').textContent = 'Save changes';
+  $('itemManagerBlock').classList.remove('collapsed');
+  $('addItemPanel').classList.remove('hidden');
+}
+$('toggleManageItems').onclick = function(){
+  manageItems = !manageItems;
+  $('addItemPanel').classList.toggle('hidden', !manageItems);
+  $('toggleManageItems').textContent = manageItems ? 'Done managing' : 'Manage list';
+  renderQuoteItems();
+  renderPackageList();
+  renderPackageItemChecks(editingPackageId ? ((data.quote.packages.find(function(p){ return p.id === editingPackageId; }) || {}).itemIds || []) : []);
+};
+$('saveItem').onclick = function(){
+  const name = $('itemName').value.trim();
+  const price = Number($('itemPrice').value) || 0;
+  const weeklyExcluded = $('itemWeeklyExcluded').checked;
+  if(!name) return;
+  if(editingItemId){
+    const item = data.quote.items.find(function(i){ return i.id === editingItemId; });
+    if(item){
+      item.name = name;
+      item.price = price;
+      item.weeklyExcluded = weeklyExcluded;
+      data.quote.selected.forEach(function(s){ if(s.itemId === editingItemId){ s.name = name; s.price = price; s.weeklyExcluded = weeklyExcluded; } });
+    }
+  } else {
+    data.quote.items.unshift({id: makeId(), name: name, price: price, weeklyExcluded: weeklyExcluded});
+  }
+  editingItemId = null;
+  $('itemName').value = '';
+  $('itemPrice').value = '';
+  $('itemWeeklyExcluded').checked = false;
+  $('saveItem').textContent = 'Save item';
+  save(); renderQuoteItems(); buildQuoteText();
+};
+$('clearItem').onclick = function(){ editingItemId = null; $('itemName').value = ''; $('itemPrice').value = ''; $('itemWeeklyExcluded').checked = false; $('saveItem').textContent = 'Save item'; };
+
+$('clearSelectedItems').onclick = function(){
+  data.quote.selected = [];
+  data.quote.afterhours = false;
+  data.quote.weeklyHire = false;
+  $('afterhours').checked = false;
+  $('weeklyHire').checked = false;
+  buildQuoteText();
+};
+$('clientType').addEventListener('change', function(){
+  const oldType = data.quote.clientType;
+  if(oldType) data.quote.intros[oldType] = $('quoteIntro').value;
+  const newType = $('clientType').value;
+  data.quote.clientType = newType;
+  $('deliveryFee').value = String(defaultDeliveryFor(newType));
+  $('quoteIntro').value = data.quote.intros[newType] || defaultIntroMap[newType];
+  updateQuoteSettingsColour();
+  buildQuoteText();
+});
+['deliveryFee','afterhours','weeklyHire','quoteClient','quoteIntro'].forEach(function(id){ $(id).addEventListener('input', buildQuoteText); });
+$('quoteOutput').oninput = function(){ data.quote.output = $('quoteOutput').value; save(); };
+$('itemSearch').oninput = function(){
+  highlightedQuoteItemIndex = 0;
+  renderQuoteItems();
+};
+
+$('itemSearch').addEventListener('keydown', function(e){
+  if(manageItems) return;
+  const items = getFilteredQuoteItems();
+
+  if(e.key === 'ArrowDown'){
+    if(!items.length) return;
+    e.preventDefault();
+    highlightedQuoteItemIndex = Math.min(highlightedQuoteItemIndex + 1, items.length - 1);
+    renderQuoteItems();
+    const highlighted = document.querySelector('#quoteItemList .quote-item.highlighted');
+    if(highlighted) highlighted.scrollIntoView({block:'nearest'});
+    return;
+  }
+
+  if(e.key === 'ArrowUp'){
+    if(!items.length) return;
+    e.preventDefault();
+    highlightedQuoteItemIndex = Math.max(highlightedQuoteItemIndex - 1, 0);
+    renderQuoteItems();
+    const highlighted = document.querySelector('#quoteItemList .quote-item.highlighted');
+    if(highlighted) highlighted.scrollIntoView({block:'nearest'});
+    return;
+  }
+
+  if(e.key !== 'Enter') return;
+  const selectedMatch = items[highlightedQuoteItemIndex] || items[0];
+  if(!selectedMatch) return;
+  e.preventDefault();
+  addQuoteItem(selectedMatch);
+  $('itemSearch').value = '';
+  highlightedQuoteItemIndex = 0;
+  renderQuoteItems();
+});
+$('copyQuote').onclick = function(){ copyText($('quoteOutput').value, 'quoteCopyStatus'); };
+
+
+function setBackupStatus(text){
+  const el = $('backupStatus');
+  if(!el) return;
+  el.textContent = text;
+  setTimeout(function(){ el.textContent = ''; }, 2200);
+}
+
+function exportQuoteItems(){
+  const items = data.quote.items.map(function(item){
+    return {name: item.name, price: Number(item.price || 0), weeklyExcluded: !!item.weeklyExcluded};
+  });
+  const payload = JSON.stringify(items, null, 2);
+  const blob = new Blob([payload], {type: 'application/json'});
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href = URL.createObjectURL(blob);
+  a.download = 'quote-price-list-backup-' + date + '.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(a.href);
+  setBackupStatus('Exported');
+}
+
+function importQuoteItemsFromFile(file, mode){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(){
+    try{
+      const imported = JSON.parse(reader.result);
+      if(!Array.isArray(imported)) throw new Error('Import file must be a JSON array.');
+
+      const cleanItems = imported
+        .filter(function(item){ return item && String(item.name || '').trim(); })
+        .map(function(item){
+          return {
+            id: makeId(),
+            name: String(item.name || '').trim(),
+            price: Number(item.price || 0),
+            weeklyExcluded: !!item.weeklyExcluded
+          };
+        });
+
+      if(!cleanItems.length) throw new Error('No valid items found.');
+
+      if(mode === 'replace'){
+        data.quote.items = cleanItems;
+        data.quote.selected = [];
+      } else {
+        const existingNames = new Set(data.quote.items.map(function(item){ return item.name.trim().toLowerCase(); }));
+        cleanItems.forEach(function(item){
+          const key = item.name.trim().toLowerCase();
+          if(!existingNames.has(key)){
+            data.quote.items.push(item);
+            existingNames.add(key);
+          }
+        });
+      }
+
+      save();
+      renderQuoteItems();
+      buildQuoteText();
+      setBackupStatus(mode === 'replace' ? 'Imported & replaced' : 'Imported & merged');
+    }catch(err){
+      alert('Import failed: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+document.querySelectorAll('.collapsible-toggle').forEach(function(btn){
+  btn.onclick = function(){
+    const id = btn.dataset.collapse;
+    const block = $(id);
+    if(block) block.classList.toggle('collapsed');
+  };
+});
+
+$('savePackage').onclick = function(){
+  const name = $('packageName').value.trim();
+  if(!name) return;
+  const checked = Array.from(document.querySelectorAll('#packageItemChecks input:checked')).map(function(input){ return input.value; });
+  if(editingPackageId){
+    const pkg = data.quote.packages.find(function(p){ return p.id === editingPackageId; });
+    if(pkg){ pkg.name = name; pkg.itemIds = checked; }
+  } else {
+    data.quote.packages.push({id: makeId(), name: name, itemIds: checked});
+  }
+  editingPackageId = null;
+  $('packageName').value = '';
+  save();
+  renderPackageList();
+  renderPackageItemChecks([]);
+};
+
+$('clearPackage').onclick = clearPackageForm;
+
+$('deletePackage').onclick = function(){
+  if(!editingPackageId) return;
+  data.quote.packages = data.quote.packages.filter(function(p){ return p.id !== editingPackageId; });
+  save();
+  clearPackageForm();
+  renderPackageList();
+};
+
+$('exportItems').onclick = exportQuoteItems;
+$('importMergeItems').onclick = function(){
+  pendingImportMode = 'merge';
+  $('importItemsFile').value = '';
+  $('importItemsFile').click();
+};
+$('importReplaceItems').onclick = function(){
+  pendingImportMode = 'replace';
+  $('importItemsFile').value = '';
+  $('importItemsFile').click();
+};
+$('importItemsFile').addEventListener('change', function(){
+  importQuoteItemsFromFile(this.files[0], pendingImportMode);
+});
+
+function copyText(text, statusId){
+  function done(){ $(statusId).textContent = 'Copied'; setTimeout(function(){ $(statusId).textContent = ''; }, 1600); }
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(fallback); }
+  else fallback();
+  function fallback(){ const temp = document.createElement('textarea'); temp.value = text; document.body.appendChild(temp); temp.select(); document.execCommand('copy'); temp.remove(); done(); }
+}
+
+save();
+renderTabs();
+loadTabNameField();
+renderSnippets();
+outEl.value = data.drafts[activeTab] || '';
+loadQuoteFields();
+renderQuoteItems();
+renderPackageList();
+updateQuoteSettingsColour();
+buildQuoteText();
+</script>
+</body>
+</html>
