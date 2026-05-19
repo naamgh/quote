@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "tabs": [
+    {
+      "name": "Tab 1",
+      "snippets": [
+        {
+          "id": "greeting",
+          "title": "Greeting",
+          "body": "Hi [Client Name],\n\nThanks for getting in touch."
+        },
+        {
+          "id": "request-more-info",
+          "title": "Request more information",
+          "body": "Could you please send through a few more details so I can look into this properly?"
+        },
+        {
+          "id": "closing",
+          "title": "Closing",
+          "body": "Kind regards,\n[Your Name]"
+        }
+      ]
+    },
+    {
+      "name": "Tab 2",
+      "snippets": []
+    },
+    {
+      "name": "Tab 3",
+      "snippets": []
+    },
+    {
+      "name": "Tab 4",
+      "snippets": []
+    },
+    {
+      "name": "Tab 5",
+      "snippets": []
+    },
+    {
+      "name": "Tab 6",
+      "snippets": []
+    }
+  ]
+}
