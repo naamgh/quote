@@ -15,6 +15,7 @@ let draggedSelectedId = null;
 let highlightedQuoteItemIndex = 0;
 let selectedSnippetId = null;
 let sortElementsMode = false;
+const HAD_LOCAL_DATA_ON_LOAD = !!localStorage.getItem(STORAGE_KEY) || LEGACY_KEYS.some(function(key){ return !!localStorage.getItem(key); });
 
 const defaultIntroMap = {
   commercial_ex: 'Hi [Client Name],\n\nThank you for your enquiry.\n\nThe cost of hire is as follows (these prices are EX-gst) -',
@@ -569,9 +570,17 @@ function getFilteredQuoteItems(){
   return data.quote.items.filter(function(i){ return !q || i.name.toLowerCase().includes(q); });
 }
 
-function addQuoteItem(item, skipBuild){
+function resetQuoteItemSearch(){
+  const search = $('itemSearch');
+  if(search) search.value = '';
+  highlightedQuoteItemIndex = 0;
+  renderQuoteItems();
+}
+
+function addQuoteItem(item, skipBuild, resetSearchAfterAdd){
   data.quote.selected.push({id: makeId(), itemId: item.id, name: item.name, price: Number(item.price), qty: 1, weeklyExcluded: !!item.weeklyExcluded});
   if(!skipBuild) buildQuoteText();
+  if(resetSearchAfterAdd) resetQuoteItemSearch();
 }
 
 function renderQuoteItems(){
@@ -598,7 +607,7 @@ function renderQuoteItems(){
     div.onclick = function(e){
       if(e.target.closest('button')) return;
       if(manageItems) return;
-      addQuoteItem(item);
+      addQuoteItem(item, false, true);
     };
 
     div.querySelector('.edit').onclick = function(e){ e.stopPropagation(); editItem(item.id); };
@@ -876,14 +885,79 @@ $('itemSearch').addEventListener('keydown', function(e){
   const selectedMatch = items[highlightedQuoteItemIndex] || items[0];
   if(!selectedMatch) return;
   e.preventDefault();
-  addQuoteItem(selectedMatch);
-  $('itemSearch').value = '';
-  highlightedQuoteItemIndex = 0;
-  renderQuoteItems();
+  addQuoteItem(selectedMatch, false, true);
 });
 $('copyQuote').onclick = function(){ copyText($('quoteOutput').value, 'quoteCopyStatus'); };
 
 
+
+function setFullBackupStatus(text){
+  const el = $('fullBackupStatus');
+  if(!el) return;
+  el.textContent = text;
+  setTimeout(function(){ el.textContent = ''; }, 2400);
+}
+
+function getFullBackupPayload(){
+  persistQuoteFields();
+  return {
+    version: 1,
+    type: 'email-response-builder-full-backup',
+    exportedAt: new Date().toISOString(),
+    storageKey: STORAGE_KEY,
+    data: normalizeData(JSON.parse(JSON.stringify(data)))
+  };
+}
+
+function exportFullBackup(){
+  const payload = JSON.stringify(getFullBackupPayload(), null, 2);
+  const blob = new Blob([payload], {type: 'application/json'});
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href = URL.createObjectURL(blob);
+  a.download = 'email-builder-full-backup-' + date + '.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(a.href);
+  setFullBackupStatus('Backed up');
+}
+
+function importFullBackupFromFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(){
+    try{
+      const imported = JSON.parse(reader.result);
+      const rawData = imported && imported.data ? imported.data : imported;
+      const restored = normalizeData(rawData);
+      data = restored;
+      selectedSnippetId = null;
+      editingId = null;
+      editingItemId = null;
+      editingPackageId = null;
+      sortElementsMode = false;
+      manageItems = false;
+      activeTab = Math.min(activeTab, quoteTabIndex);
+      save();
+      applyTheme();
+      renderTabs();
+      loadTabNameField();
+      outEl.value = data.drafts[activeTab] || '';
+      clearEditor();
+      renderSnippets();
+      loadQuoteFields();
+      renderQuoteItems();
+      renderPackageList();
+      updateQuoteSettingsColour();
+      buildQuoteText();
+      setFullBackupStatus('Restored');
+    }catch(err){
+      alert('Restore failed: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
 
 function setElementsBackupStatus(text){
   const el = $('elementsBackupStatus');
@@ -1075,6 +1149,15 @@ $('deletePackage').onclick = function(){
 };
 
 
+if($('exportFullBackup')) $('exportFullBackup').onclick = exportFullBackup;
+if($('restoreFullBackup')) $('restoreFullBackup').onclick = function(){
+  $('restoreFullBackupFile').value = '';
+  $('restoreFullBackupFile').click();
+};
+if($('restoreFullBackupFile')) $('restoreFullBackupFile').addEventListener('change', function(){
+  importFullBackupFromFile(this.files[0]);
+});
+
 if($('exportElements')) $('exportElements').onclick = exportEmailElements;
 if($('importElementsMerge')) $('importElementsMerge').onclick = function(){
   pendingElementsImportMode = 'merge';
@@ -1157,7 +1240,7 @@ loadTabNameField();
 renderSnippets();
 outEl.value = data.drafts[activeTab] || '';
 loadQuoteFields();
-loadEmailElementsFromJson();
+if(!HAD_LOCAL_DATA_ON_LOAD) loadEmailElementsFromJson();
 loadQuoteItemsFromJson();
 renderQuoteItems();
 renderPackageList();

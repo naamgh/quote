@@ -8,7 +8,7 @@
 </head>
 
 <body>
-<div class="topbar"><div class="wrap"><div class="top-row"><h1>Email Response Builder</h1><button class="dark-toggle" id="darkToggle">Dark mode</button></div><div class="tabs" id="tabs"></div></div></div>
+<div class="topbar"><div class="wrap"><div class="top-row"><h1>Email Response Builder</h1><div class="top-actions"><button class="ghost small-btn" id="exportFullBackup">Backup all</button><button class="ghost small-btn" id="restoreFullBackup">Restore backup</button><input id="restoreFullBackupFile" type="file" accept=".json,application/json" /><span class="small" id="fullBackupStatus"></span><button class="dark-toggle" id="darkToggle">Dark mode</button></div></div><div class="tabs" id="tabs"></div></div></div>
 
 <main class="email-workflow" id="emailMode">
   <section class="card composer-card">
@@ -51,13 +51,6 @@
       <button class="ghost small-btn" id="sortElements" type="button">Sort</button>
     </div>
     <div class="section stack">
-      <div class="backup-actions">
-        <button class="ghost small-btn" id="exportElements">Export elements</button>
-        <button class="ghost small-btn" id="importElementsMerge">Import & merge</button>
-        <button class="danger small-btn" id="importElementsReplace">Import & replace</button>
-        <input id="importElementsFile" type="file" accept=".json,application/json" />
-        <span class="small" id="elementsBackupStatus"></span>
-      </div>
       <input id="search" placeholder="Search saved elements..." />
       <div class="stack email-element-list" id="snippetList"></div>
     </div>
