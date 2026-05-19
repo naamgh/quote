@@ -77,6 +77,42 @@ h1{font-size:24px;margin:0 0 12px;font-weight:750;letter-spacing:-.03em}
 .tab{border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:10px 16px;border-radius:999px;cursor:pointer;font-weight:700;white-space:nowrap}
 .tab.active{background:var(--ink);color:white;border-color:var(--ink)}
 .grid{max-width:1500px;margin:0 auto;padding:18px;display:grid;grid-template-columns:minmax(330px,520px) 1fr;gap:18px;align-items:start}
+.email-workflow{
+  max-width:1700px;
+  margin:0 auto;
+  padding:18px;
+  display:grid;
+  grid-template-columns:minmax(290px,380px) minmax(300px,380px) minmax(360px,1fr) minmax(360px,1fr);
+  gap:14px;
+  align-items:stretch;
+}
+.email-workflow > .card{min-height:760px;height:760px;display:flex;flex-direction:column}
+.email-workflow > .card > .section{flex:1;min-height:0;display:flex;flex-direction:column}
+.composer-card .compose-text{min-height:430px;flex:1}
+.email-element-list{flex:1;min-height:0;overflow:auto;padding-right:4px}
+.editable-tab-title{display:flex;align-items:center;gap:8px}
+.editable-tab-title h2{font-size:16px;margin:0}
+.icon-btn{width:34px;height:34px;padding:0;display:flex;align-items:center;justify-content:center;border-radius:10px}
+.icon-btn svg{width:16px;height:16px;stroke:currentColor}
+.inline-title-editor{display:flex;gap:8px;align-items:center}
+.snippet.selected{border-color:var(--accent);background:var(--accent-soft)}
+.snippet-preview{font-size:12px;color:var(--muted);line-height:1.35;max-height:42px;overflow:hidden}
+.snippet-card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.snippet-icon-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.snippet.sorting{cursor:grab}
+.snippet.sorting:active{cursor:grabbing}
+.snippet.dragging{opacity:.45}
+.drag-handle-small{display:none;color:var(--muted);font-weight:900;font-size:16px;line-height:1;padding-right:2px;user-select:none}
+.sort-mode .drag-handle-small{display:inline-block}
+.sort-mode .snippet{cursor:grab}
+.sort-mode .snippet-delete-sort{display:flex!important}
+.snippet-delete-sort{display:none!important}
+.rich-toolbar{display:flex;gap:8px;flex-wrap:wrap;border:1px solid var(--line);border-radius:14px;padding:8px;background:#fafafa}
+.rich-editor{flex:1;min-height:430px;border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff;color:var(--ink);font-family:Arial,sans-serif;font-size:14px;line-height:1.4;overflow:auto;outline:none}
+.rich-editor:empty:before{content:attr(data-placeholder);color:var(--muted)}
+.rich-editor ul,.rich-editor ol{padding-left:22px}
+body.dark .rich-toolbar{background:#24262b;border-color:#45474d}
+body.dark .rich-editor{background:#24262b;border-color:#45474d;color:var(--ink)}
 .quote-grid{
   max-width:1700px;
   margin:0 auto;
@@ -309,6 +345,9 @@ body.dark .quote-settings-card.type-private-venue .card-head{
   border-color:#c084fc;
 }
 @media(max-width:1150px){
+  .email-workflow{grid-template-columns:1fr}
+  .email-workflow > .card{height:auto;min-height:auto}
+  .composer-card .compose-text,.rich-editor{min-height:320px}
   .quote-grid{grid-template-columns:1fr}
   .quote-grid > .card{height:auto;min-height:auto}
   .compact-list{max-height:none}
@@ -320,22 +359,83 @@ body.dark .quote-settings-card.type-private-venue .card-head{
 <body>
 <div class="topbar"><div class="wrap"><div class="top-row"><h1>Email Response Builder</h1><button class="dark-toggle" id="darkToggle">Dark mode</button></div><div class="tabs" id="tabs"></div></div></div>
 
-<main class="grid" id="emailMode">
-  <section class="card">
-    <div class="card-head"><div><h2>Editable email elements</h2><div class="hint">Create reusable chunks for the active tab. Click “Add to email” to build your response.</div></div><span class="pill" id="activeTabLabel">Tab 1</span></div>
-    <div class="section stack">
-      <div class="tab-rename" id="tabRenameBox">
-        <input id="tabNameInput" placeholder="Rename this tab" />
-        <button class="ghost" id="renameTab">Rename tab</button>
+<main class="email-workflow" id="emailMode">
+  <section class="card composer-card">
+    <div class="card-head">
+      <div>
+        <div class="editable-tab-title">
+          <h2 id="activeTabTitleText">Tab 1</h2>
+          <button class="ghost icon-btn" id="editTabTitle" title="Rename tab" aria-label="Rename tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="hint">Create reusable email elements for the active tab.</div>
       </div>
-      <input id="snippetTitle" placeholder="Element title, e.g. Opening greeting" />
-      <textarea id="snippetBody" placeholder="Paste or write the reusable email text here..."></textarea>
+      <span class="pill" id="activeTabLabel">Tab 1</span>
+    </div>
+    <div class="section stack">
+      <div class="inline-title-editor hidden" id="tabRenameBox">
+        <input id="tabNameInput" placeholder="Rename this tab" />
+        <button class="ghost" id="renameTab">Save</button>
+        <button class="ghost" id="cancelRenameTab">Cancel</button>
+      </div>
+      <div>
+        <div class="label">Element title</div>
+        <input id="snippetTitle" placeholder="e.g. Opening greeting" />
+      </div>
+      <div>
+        <div class="label">Email text</div>
+        <textarea id="snippetBody" class="compose-text" placeholder="Paste or write the reusable email text here..."></textarea>
+      </div>
       <div class="row"><button id="saveSnippet">Add element</button><button class="ghost" id="clearForm">Clear</button></div>
-      <input id="search" placeholder="Search elements in this tab..." />
-      <div class="stack" id="snippetList"></div>
     </div>
   </section>
-  <section class="card">
+
+  <section class="card library-card">
+    <div class="card-head">
+      <div><h2>Saved elements</h2><div class="hint">Search, copy, or select an element to edit.</div></div>
+      <button class="ghost small-btn" id="sortElements" type="button">Sort</button>
+    </div>
+    <div class="section stack">
+      <input id="search" placeholder="Search saved elements..." />
+      <div class="stack email-element-list" id="snippetList"></div>
+    </div>
+  </section>
+
+  <section class="card editor-card">
+    <div class="card-head">
+      <div><h2>Full editor</h2><div class="hint">Click a saved element to edit, style, copy, or add it to the built response.</div></div>
+      <button class="ghost copy-icon-btn" id="copyEditor" title="Copy editor text" aria-label="Copy editor text">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="section stack">
+      <input id="editorTitle" placeholder="Select a saved element to edit" />
+      <div class="rich-toolbar" id="richToolbar">
+        <button class="ghost small-btn" data-command="bold"><strong>B</strong></button>
+        <button class="ghost small-btn" data-command="italic"><em>I</em></button>
+        <button class="ghost small-btn" data-command="underline"><u>U</u></button>
+        <button class="ghost small-btn" data-command="insertUnorderedList">• List</button>
+        <button class="ghost small-btn" data-command="insertOrderedList">1. List</button>
+        <button class="ghost small-btn" data-command="removeFormat">Clear style</button>
+      </div>
+      <div id="richEditor" class="rich-editor" contenteditable="true" data-placeholder="Select a saved element from the middle column to edit it here."></div>
+      <div class="toolbar">
+        <button id="saveEditorElement">Save changes</button>
+        <button class="secondary" id="addEditorToEmail">Add to built email</button>
+        <button class="danger" id="deleteEditorElement">Delete</button>
+        <span class="small" id="editorCopyStatus"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="card built-email-card">
     <div class="card-head"><div><h2>Built email response</h2><div class="hint">Edit directly here, then copy when ready.</div></div></div>
     <div class="split-actions"><button id="copyEmail">Copy email</button><button class="ghost" id="newLine">Add line break</button><button class="danger" id="clearEmail">Clear email</button><span class="small" id="copyStatus"></span></div>
     <div class="section"><textarea id="emailOutput" class="email-box" placeholder="Your selected email elements will appear here. You can also type and edit directly."></textarea></div>
@@ -460,6 +560,8 @@ let pendingImportMode = 'merge';
 let editingPackageId = null;
 let draggedSelectedId = null;
 let highlightedQuoteItemIndex = 0;
+let selectedSnippetId = null;
+let sortElementsMode = false;
 
 const defaultIntroMap = {
   commercial_ex: 'Hi [Client Name],\n\nThank you for your enquiry.\n\nThe cost of hire is as follows (these prices are EX-gst) -',
@@ -626,7 +728,10 @@ function renderTabs(){
     b.onclick = function(){ switchTab(idx); };
     tabsEl.appendChild(b);
   });
-  $('activeTabLabel').textContent = data.tabs[activeTab] ? data.tabs[activeTab].name : ('Tab ' + (activeTab + 1));
+  const activeName = data.tabs[activeTab] ? data.tabs[activeTab].name : ('Tab ' + (activeTab + 1));
+  $('activeTabLabel').textContent = activeName;
+  const titleText = $('activeTabTitleText');
+  if(titleText) titleText.textContent = activeName;
   $('emailMode').classList.toggle('hidden', activeTab === quoteTabIndex);
   $('quoteMode').classList.toggle('hidden', activeTab !== quoteTabIndex);
 }
@@ -642,32 +747,117 @@ function loadTabNameField(){
   const locked = activeTab === quoteTabIndex;
   input.disabled = locked;
   button.disabled = locked;
-  box.classList.toggle('hidden', locked);
+  box.classList.add('hidden');
 }
 
 function renderSnippets(){
   const q = $('search').value.trim().toLowerCase();
-  const snippets = (data.tabs[activeTab].snippets || []).filter(function(s){ return !q || (s.title + s.body).toLowerCase().includes(q); });
+  const sourceSnippets = data.tabs[activeTab].snippets || [];
+  const snippets = sourceSnippets.filter(function(s){ return !q || (s.title + plainTextFromHtml(s.body)).toLowerCase().includes(q); });
   listEl.innerHTML = '';
+  listEl.classList.toggle('sort-mode', !!sortElementsMode);
+  const sortBtn = $('sortElements');
+  if(sortBtn) sortBtn.textContent = sortElementsMode ? 'Done' : 'Sort';
   if(!snippets.length){ listEl.innerHTML = '<div class="empty">No elements yet for this tab.</div>'; return; }
+
+  function getDragAfterElement(container, y){
+    const draggableElements = Array.from(container.querySelectorAll('.snippet:not(.dragging)'));
+    return draggableElements.reduce(function(closest, child){
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if(offset < 0 && offset > closest.offset){
+        return {offset: offset, element: child};
+      }
+      return closest;
+    }, {offset: Number.NEGATIVE_INFINITY}).element;
+  }
+
+  listEl.ondragover = function(e){
+    if(!sortElementsMode) return;
+    e.preventDefault();
+    const afterElement = getDragAfterElement(listEl, e.clientY);
+    const dragging = document.querySelector('#snippetList .snippet.dragging');
+    if(!dragging) return;
+    if(afterElement == null){
+      listEl.appendChild(dragging);
+    } else {
+      listEl.insertBefore(dragging, afterElement);
+    }
+  };
+
+  listEl.ondrop = function(e){
+    if(!sortElementsMode) return;
+    e.preventDefault();
+    const orderedIds = Array.from(listEl.querySelectorAll('.snippet')).map(function(el){ return el.dataset.snippetId; });
+    const current = data.tabs[activeTab].snippets || [];
+    const orderedSet = new Set(orderedIds);
+    const reorderedVisible = orderedIds.map(function(id){ return current.find(function(s){ return s.id === id; }); }).filter(Boolean);
+    const hidden = current.filter(function(s){ return !orderedSet.has(s.id); });
+    data.tabs[activeTab].snippets = reorderedVisible.concat(hidden);
+    save();
+    renderSnippets();
+  };
+
   snippets.forEach(function(s){
     const div = document.createElement('div');
-    div.className = 'snippet';
-    div.innerHTML = '<div class="snippet-title"><strong></strong><span class="pill">Saved</span></div><div class="snippet-preview"></div><div class="snippet-actions"><button class="secondary add">Add to email</button><button class="ghost edit">Edit</button><button class="danger del">Delete</button></div>';
+    div.className = 'snippet' + (s.id === selectedSnippetId ? ' selected' : '') + (sortElementsMode ? ' sorting' : '');
+    div.draggable = !!sortElementsMode;
+    div.dataset.snippetId = s.id;
+    div.innerHTML = '<div class="snippet-card-top"><div style="min-width:0"><div class="item-title" style="justify-content:flex-start;gap:6px"><span class="drag-handle-small">☰</span><strong></strong></div><div class="snippet-preview"></div></div><div class="snippet-icon-actions"><button class="secondary icon-btn add" title="Add to email" aria-label="Add to email">+</button><button class="ghost icon-btn copy" title="Copy styled element" aria-label="Copy styled element"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><button class="danger icon-btn snippet-delete-sort" title="Delete element" aria-label="Delete element">×</button></div></div><span class="small item-copy-status"></span>';
     div.querySelector('strong').textContent = s.title;
-    div.querySelector('.snippet-preview').textContent = s.body;
-    div.querySelector('.add').onclick = function(){ addToEmail(s.body); };
-    div.querySelector('.edit').onclick = function(){ editSnippet(s.id); };
-    div.querySelector('.del').onclick = function(){ deleteSnippet(s.id); };
+    div.querySelector('.snippet-preview').textContent = plainTextFromHtml(s.body).slice(0, 180);
+    div.onclick = function(e){
+      if(sortElementsMode || e.target.closest('button')) return;
+      openElementEditor(s.id);
+    };
+    div.addEventListener('dragstart', function(){
+      if(!sortElementsMode) return;
+      div.classList.add('dragging');
+    });
+    div.addEventListener('dragend', function(){
+      div.classList.remove('dragging');
+    });
+    div.querySelector('.add').onclick = function(e){ e.stopPropagation(); addToEmail(plainTextFromHtml(s.body)); };
+    div.querySelector('.copy').onclick = function(e){ e.stopPropagation(); copyStyledHtml(s.body.indexOf('<') >= 0 ? s.body : htmlFromPlainText(s.body), div.querySelector('.item-copy-status')); };
+    div.querySelector('.snippet-delete-sort').onclick = function(e){ e.stopPropagation(); deleteSnippet(s.id); };
     listEl.appendChild(div);
   });
 }
+
+function plainTextFromHtml(html){
+  const tmp = document.createElement('div');
+  tmp.innerHTML = String(html || '').replace(/\n/g, '<br>');
+  return tmp.innerText || tmp.textContent || '';
+}
+function htmlFromPlainText(text){
+  return escapeText(text || '').replace(/\n/g, '<br>');
+}
+function openElementEditor(id){
+  const s = data.tabs[activeTab].snippets.find(function(x){ return x.id === id; });
+  if(!s) return;
+  selectedSnippetId = id;
+  editingId = id;
+  $('editorTitle').value = s.title;
+  $('richEditor').innerHTML = s.body.indexOf('<') >= 0 ? s.body : htmlFromPlainText(s.body);
+  $('saveSnippet').textContent = 'Add element';
+  renderSnippets();
+}
+function clearEditor(){
+  selectedSnippetId = null;
+  editingId = null;
+  if($('editorTitle')) $('editorTitle').value = '';
+  if($('richEditor')) $('richEditor').innerHTML = '';
+}
+
 
 function switchTab(idx){
   data.drafts[activeTab] = outEl.value;
   activeTab = idx;
   outEl.value = data.drafts[activeTab] || '';
   editingId = null;
+  selectedSnippetId = null;
+  sortElementsMode = false;
+  clearEditor();
   $('snippetTitle').value = '';
   $('snippetBody').value = '';
   $('saveSnippet').textContent = 'Add element';
@@ -689,16 +879,12 @@ function addToEmail(text){
   outEl.focus();
 }
 function editSnippet(id){
-  const s = data.tabs[activeTab].snippets.find(function(x){ return x.id === id; });
-  if(!s) return;
-  editingId = id;
-  $('snippetTitle').value = s.title;
-  $('snippetBody').value = s.body;
-  $('saveSnippet').textContent = 'Save changes';
-  window.scrollTo({top:0,behavior:'smooth'});
+  openElementEditor(id);
 }
+
 function deleteSnippet(id){
   data.tabs[activeTab].snippets = data.tabs[activeTab].snippets.filter(function(s){ return s.id !== id; });
+  if(selectedSnippetId === id) clearEditor();
   save(); renderSnippets();
 }
 
@@ -713,18 +899,33 @@ $('saveSnippet').onclick = function(){
     data.tabs[activeTab].snippets.unshift({id: makeId(), title: title, body: body});
   }
   editingId = null;
+  selectedSnippetId = null;
+  sortElementsMode = false;
+  clearEditor();
   $('snippetTitle').value = '';
   $('snippetBody').value = '';
   $('saveSnippet').textContent = 'Add element';
   save(); renderSnippets();
 };
-$('clearForm').onclick = function(){ editingId = null; $('snippetTitle').value = ''; $('snippetBody').value = ''; $('saveSnippet').textContent = 'Add element'; };
+$('clearForm').onclick = function(){ $('snippetTitle').value = ''; $('snippetBody').value = ''; $('saveSnippet').textContent = 'Add element'; };
+$('sortElements').onclick = function(){
+  sortElementsMode = !sortElementsMode;
+  renderSnippets();
+};
 $('search').oninput = renderSnippets;
 outEl.oninput = function(){ data.drafts[activeTab] = outEl.value; save(); };
 $('newLine').onclick = function(){ outEl.value = outEl.value.trimEnd() + '\n\n'; outEl.focus(); data.drafts[activeTab] = outEl.value; save(); };
 $('clearEmail').onclick = function(){ outEl.value = ''; data.drafts[activeTab] = ''; save(); };
 $('copyEmail').onclick = function(){ copyText(outEl.value, 'copyStatus'); };
 
+$('editTabTitle').onclick = function(){
+  if(activeTab === quoteTabIndex) return;
+  $('tabNameInput').value = data.tabs[activeTab].name || ('Tab ' + (activeTab + 1));
+  $('tabRenameBox').classList.remove('hidden');
+  $('tabNameInput').focus();
+  $('tabNameInput').select();
+};
+$('cancelRenameTab').onclick = function(){ $('tabRenameBox').classList.add('hidden'); };
 $('renameTab').onclick = function(){
   if(activeTab === quoteTabIndex) return;
   const newName = $('tabNameInput').value.trim();
@@ -732,13 +933,32 @@ $('renameTab').onclick = function(){
   data.tabs[activeTab].name = newName;
   save();
   renderTabs();
-  loadTabNameField();
+  $('tabRenameBox').classList.add('hidden');
 };
 
 $('tabNameInput').addEventListener('keydown', function(e){
   if(e.key === 'Enter') $('renameTab').click();
 });
 
+
+$('copyEditor').onclick = function(){ copyStyledHtml($('richEditor').innerHTML || '', 'editorCopyStatus'); };
+$('saveEditorElement').onclick = function(){
+  if(!selectedSnippetId) return;
+  const s = data.tabs[activeTab].snippets.find(function(x){ return x.id === selectedSnippetId; });
+  if(!s) return;
+  s.title = $('editorTitle').value.trim() || 'Untitled element';
+  s.body = $('richEditor').innerHTML.trim();
+  save();
+  renderSnippets();
+};
+$('addEditorToEmail').onclick = function(){ addToEmail(plainTextFromHtml($('richEditor').innerHTML)); };
+$('deleteEditorElement').onclick = function(){ if(selectedSnippetId) deleteSnippet(selectedSnippetId); };
+document.querySelectorAll('#richToolbar button[data-command]').forEach(function(btn){
+  btn.onclick = function(){
+    $('richEditor').focus();
+    document.execCommand(btn.dataset.command, false, null);
+  };
+});
 function updateQuoteSettingsColour(){
   const type = $('clientType').value;
   const card = $('quoteSettingsCard');
@@ -1287,6 +1507,45 @@ $('importReplaceItems').onclick = function(){
 $('importItemsFile').addEventListener('change', function(){
   importQuoteItemsFromFile(this.files[0], pendingImportMode);
 });
+
+function normalEmailHtml(html){
+  return '<div style="font-family:Arial,sans-serif;font-size:14px;line-height:1.4;color:#222222;">' + (html || '') + '</div>';
+}
+
+function copyStyledHtml(html, statusTarget){
+  const styledHtml = normalEmailHtml(html || '');
+  const plain = plainTextFromHtml(styledHtml);
+  function statusEl(){ return typeof statusTarget === 'string' ? $(statusTarget) : statusTarget; }
+  function done(){ const el = statusEl(); if(el){ el.textContent = 'Copied'; setTimeout(function(){ el.textContent = ''; }, 1600); } }
+  function fallback(){
+    const temp = document.createElement('div');
+    temp.contentEditable = 'true';
+    temp.style.position = 'fixed';
+    temp.style.left = '-9999px';
+    temp.style.top = '0';
+    temp.innerHTML = styledHtml;
+    document.body.appendChild(temp);
+    const range = document.createRange();
+    range.selectNodeContents(temp);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    document.execCommand('copy');
+    selection.removeAllRanges();
+    temp.remove();
+    done();
+  }
+
+  if(navigator.clipboard && window.ClipboardItem){
+    const item = new ClipboardItem({
+      'text/html': new Blob([styledHtml], {type: 'text/html'}),
+      'text/plain': new Blob([plain], {type: 'text/plain'})
+    });
+    navigator.clipboard.write([item]).then(done).catch(fallback);
+  } else {
+    fallback();
+  }
+}
 
 function copyText(text, statusId){
   function done(){ $(statusId).textContent = 'Copied'; setTimeout(function(){ $(statusId).textContent = ''; }, 1600); }
