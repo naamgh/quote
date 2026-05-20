@@ -598,11 +598,14 @@ function renderQuoteItems(){
     div.innerHTML = '<div class="item-title"><strong></strong></div><div class="item-actions"><button class="ghost edit small-btn">Edit</button><button class="danger del small-btn">Delete</button></div>';
     div.querySelector('strong').textContent = item.name;
     div.title = 'Click to add ' + item.name;
-    div.onmouseenter = function(){
-      if(manageItems) return;
-      highlightedQuoteItemIndex = index;
-      renderQuoteItems();
-    };
+div.onmouseenter = function(){
+  if(manageItems) return;
+  highlightedQuoteItemIndex = index;
+  document.querySelectorAll('#quoteItemList .quote-item').forEach(function(el){
+    el.classList.remove('highlighted');
+  });
+  div.classList.add('highlighted');
+};
 
     div.onclick = function(e){
       if(e.target.closest('button')) return;
