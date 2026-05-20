@@ -740,21 +740,31 @@ function buildQuoteText(){
   if(type === 'commercial_ex'){
     lines.push('Total: ' + money(total) + ' + GST');
     lines.push('');
-    lines.push('This includes delivery, setup and pack down as required.');
-    if(afterhours > 0) lines.push('An afterhours fee applies as your delivery/pick-up falls outside our regular trading hours (weekdays, 9am–5pm).');
+    if(afterhours > 0){
+      lines.push('This includes delivery, setup and pack down as required.');
+      lines.push('An afterhours fee applies as your delivery/pick-up falls outside our regular trading hours (weekdays, 9am–5pm).');
+    } else if(delivery > 0){
+      lines.push('Delivery and pick up as quoted to be during business hours (Mon-Fri, 9am-5pm).');
+      lines.push('If required, we can arrange afterhours services for an additional $250 + gst.');
+    }
     lines.push('');
   } else if(type === 'commercial_inc'){
     lines.push('Total: ' + money(total) + ' inc. GST');
     lines.push('');
-    lines.push('This includes delivery, setup and pack down as required.');
-    if(afterhours > 0) lines.push('An afterhours fee applies as your delivery/pick-up falls outside our regular trading hours (weekdays, 9am–5pm).');
+    if(afterhours > 0){
+      lines.push('This includes delivery, setup and pack down as required.');
+      lines.push('An afterhours fee applies as your delivery/pick-up falls outside our regular trading hours (weekdays, 9am–5pm).');
+    } else if(delivery > 0){
+      lines.push('Delivery and pick up as quoted to be during business hours (Mon-Fri, 9am-5pm).');
+      lines.push('If required, we can arrange afterhours services for an additional $250 + gst.');
+    }
     lines.push('');
   } else {
     lines.push('Total: ' + money(total));
     if(type === 'private_residential' && selectedItemCount >= 3) lines.push('Total after Package Discount: ' + money(total - packageDiscount));
     lines.push('');
     if(type === 'private_residential' && selectedItemCount >= 3) lines.push('Hiring packages of 3 items or more items automatically applies a 20% package discount');
-    if(type === 'private_residential' && selectedItemCount >= 3 && hasDiscountExcludedItems) lines.push('Please note: items priced at $250 or less do not qualify for the 20% package discount.');
+    if(type === 'private_residential' && selectedItemCount >= 3) lines.push('Package discount only applies to items $300 or more.');
     if(type === 'private_residential' && selectedItemCount === 2) lines.push('Just note if you hire another item, you receive a 20% package discount.')
     if(type === 'private_residential' && selectedItemCount === 2) lines.push('For example, an Upright Arcade is normally $300.')
     if(type === 'private_residential' && selectedItemCount === 2) lines.push('If you hire all 3 items your total price will be '  + money((subtotal + 300) * 0.80));
