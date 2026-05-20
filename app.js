@@ -740,14 +740,24 @@ function buildQuoteText(){
   if(type === 'commercial_ex'){
     lines.push('Total: ' + money(total) + ' + GST');
     lines.push('');
-    lines.push('This includes delivery, setup and pack down as required.');
-    if(afterhours > 0) lines.push('An afterhours fee applies as your delivery/pick-up falls outside our regular trading hours (weekdays, 9am–5pm).');
+    if(afterhours > 0){
+      lines.push('This includes delivery, setup and pack down as required.');
+      lines.push('An afterhours fee applies as your delivery/pick-up falls outside our regular trading hours (weekdays, 9am–5pm).');
+    } else if(delivery > 0){
+      lines.push('Delivery and pick up as quoted to be during business hours (Mon-Fri, 9am-5pm).');
+      lines.push('If required, we can arrange afterhours services for an additional $250 + gst.');
+    }
     lines.push('');
   } else if(type === 'commercial_inc'){
     lines.push('Total: ' + money(total) + ' inc. GST');
     lines.push('');
-    lines.push('This includes delivery, setup and pack down as required.');
-    if(afterhours > 0) lines.push('An afterhours fee applies as your delivery/pick-up falls outside our regular trading hours (weekdays, 9am–5pm).');
+    if(afterhours > 0){
+      lines.push('This includes delivery, setup and pack down as required.');
+      lines.push('An afterhours fee applies as your delivery/pick-up falls outside our regular trading hours (weekdays, 9am–5pm).');
+    } else if(delivery > 0){
+      lines.push('Delivery and pick up as quoted to be during business hours (Mon-Fri, 9am-5pm).');
+      lines.push('If required, we can arrange afterhours services for an additional $250 + gst.');
+    }
     lines.push('');
   } else {
     lines.push('Total: ' + money(total));
